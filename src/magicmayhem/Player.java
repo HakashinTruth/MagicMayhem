@@ -5,6 +5,7 @@
  */
 package magicmayhem;
 
+import java.util.Random;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
@@ -17,7 +18,7 @@ class Player extends Sprite {
     public Rectangle rect;
     boolean dead = false;
 
-    public Player(double width, double height, double radius, double playerspeed, double playerrotation, Color color) {
+    public Player(Random x,Random y,double width, double height, double radius, double playerspeed, double playerrotation, Color color,int screenwidth, int screenheight) {
         rect = new Rectangle(width, height, color);
         Radians = Math.toRadians(rect.getRotate());
         this.speed = playerspeed;
@@ -25,6 +26,8 @@ class Player extends Sprite {
         this.speed = playerspeed;
         this.rotation = playerrotation;
         this.color = color;
+        rect.setX(x.nextInt((int) screenwidth));
+        rect.setY(y.nextInt((int) screenheight));
     }
 
     void moveup() {
