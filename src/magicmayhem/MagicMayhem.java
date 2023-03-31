@@ -59,7 +59,8 @@ public class MagicMayhem extends Application {
     int width = (int) Screen.getPrimary().getBounds().getWidth();
     int height = (int) Screen.getPrimary().getBounds().getHeight();
     ArrayList <Bullet> projectiles;
-    Random rand = new Random(1000);
+    Random wrand = new Random(width);
+    Random hrand = new Random(height);
     
     @Override
     public void start(Stage primaryStage) {
@@ -181,11 +182,11 @@ public class MagicMayhem extends Application {
     // Play Scene
     private void PlayMethod(Stage primaryStage) {       
 
-        playerTwoSprite = new Image(getClass().getResourceAsStream("Playertwo.png"));
-       playerTwo = new ImageView(playerTwoSprite);
+ //       playerTwoSprite = new Image(getClass().getResourceAsStream("Playertwo.png"));
+//       playerTwo = new ImageView(playerTwoSprite);
         // Main Game loop
-        playerone = new Player(playerheight, playerwidth, bulletRadius, playerspeed, playerrotation, Color.BLUE);
-        playertwo = new Player(playerheight, playerwidth, bulletRadius, playerspeed, playerrotation, Color.ORANGE);
+        playerone = new Player(wrand,hrand,playerheight, playerwidth, bulletRadius, playerspeed, playerrotation, Color.BLUE,width,height);
+        playertwo = new Player(wrand,hrand,playerheight, playerwidth, bulletRadius, playerspeed, playerrotation, Color.ORANGE,width,height);
         projectiles = new ArrayList();
          playroot.getChildren().addAll(playerone.rect, playertwo.rect);
          // MAZE MAP GENERATION
@@ -257,7 +258,9 @@ public class MagicMayhem extends Application {
                     playroot.getChildren().removeAll(playertwo.rect, projectiles.get((projectiles.size() - 1)).getCircle());
                 }
                 // bullet updater
+
                 Iterator<Bullet> it = projectiles.iterator();
+
                 while (it.hasNext()) {
                     Bullet b = it.next();
                     b.move();
@@ -269,42 +272,58 @@ public class MagicMayhem extends Application {
                         playertwo.dead = true;
                     }
                     // BALL TO MAZE COLLISION
-                        for (Wall wall : Gen.walls) {
-                                wallCol(wall, b);
-                        }
-                    
+                    if (b.getX() >= width || b.getX() <= 0) {
+                        b.verticalColisionmove();
+
                     }
+                    if (b.getY() >= height || b.getY() <= 0) {
+                        b.horizontalColisionmove();
+
+                    }
+                    for (Wall wall : Gen.walls) {
+                        if (wall.getBoundsInParent().intersects(b.getCircle().getBoundsInParent())) {
+                            if (wall.isVertical) {
+                                b.verticalColisionmove();
+
+                            } else if (!wall.isVertical) {
+                                b.horizontalColisionmove();
+
+                            }
+                        }
+                    }
+                }
                 // player:MAZE COLIISION 
                 for (Wall wall : Gen.walls) {
                     if (wall.getBoundsInParent().intersects(playerone.rect.getBoundsInParent())) {
                         //what player will do
                         //player 1
-                     if (moveUp) playerone.antimoveup();
-                     if (moveDown) playerone.antimovedown();
-                     if (turnLeft)  playerone.colantirotate();
-                     if (turnRight)  playerone.colrotate();
+                        if (moveUp) {
+                            playerone.antimoveup();
+                        }
+                        if (moveDown) {
+                            playerone.antimovedown();
+                        }
+                        if (turnLeft) {
+                            playerone.colantirotate();
+                        }
+                        if (turnRight) {
+                            playerone.colrotate();
+                        }
                     }
                     if (wall.getBoundsInParent().intersects(playertwo.rect.getBoundsInParent())) {
                         //player 1
-                     if (arrowUp) playertwo.antimoveup();
-                     if (arrowDown) playertwo.antimovedown();
-                     if (arrowLeft)  playertwo.colantirotate();
-                     if (arrowRight)  playertwo.colrotate();
-                    }
-                   }
-            }
-
-            private void wallCol(Wall wall, Bullet b) {
-                if (wall.isVertical) {
-
-                    if (wall.getBoundsInParent().intersects(b.getCircle().getBoundsInParent())) {
-                        System.out.println("is");
-                        b.verticalColisionmove();
-                    }
-                } else if (!wall.isVertical) {
-                    if (wall.getBoundsInParent().intersects(b.getCircle().getBoundsInParent())) {
-                        System.out.println("not");
-                        b.horizontalColisionmove();
+                        if (arrowUp) {
+                            playertwo.antimoveup();
+                        }
+                        if (arrowDown) {
+                            playertwo.antimovedown();
+                        }
+                        if (arrowLeft) {
+                            playertwo.colantirotate();
+                        }
+                        if (arrowRight) {
+                            playertwo.colrotate();
+                        }
                     }
                 }
             }

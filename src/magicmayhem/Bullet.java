@@ -42,7 +42,6 @@ public class Bullet extends Sprite {
     }
 
     public void horizontalColisionmove() {
-        System.out.println("hor");
         if ((0 < circ.getRotate() && circ.getRotate() <= 90)) {
            playerRotate=-playerRotate;
         }
@@ -58,7 +57,6 @@ public class Bullet extends Sprite {
     }
 
     public void verticalColisionmove() {
-         System.out.println("ver");
         if (0 < circ.getRotate() && circ.getRotate() <= 90) {
             playerRotate = 360 + (180 - playerRotate);
 

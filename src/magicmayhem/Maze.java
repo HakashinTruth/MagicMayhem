@@ -17,11 +17,11 @@ import javafx.scene.shape.Rectangle;
  */
 public  class Maze {
 
-    public int width=900;
-    public int height=900;
-    public int cellSize = width/6;
-    public int ROWS =  width/10;
-    public int COLS =  height/10;
+    public int width;
+    public int height;
+    public int cellSize;
+    public int ROWS;
+    public int COLS;
     public Color WallColor = Color.WHITE;
     public Color CellColor = Color.BLACK;
     public int wallWidth = 4;
@@ -31,7 +31,7 @@ public  class Maze {
     public int right = 3;
     public int down = 4;
     public List<Wall> walls = new ArrayList<>();
-    public int[][] maze = new int[ROWS][COLS];
+    public int[][] maze;
     public Random random = new Random();
     Wall  h;
     Wall v;
@@ -40,7 +40,11 @@ public  class Maze {
     public Maze(int scenewidth, int sceneheight) {
         height = sceneheight;
         width = scenewidth;
-        
+        cellSize = width / 10;
+        ROWS = width / 10;
+        COLS = height / 10;
+        maze = new int[ROWS][COLS];
+
                 // Generate the maze
         generateMaze(random.nextInt(ROWS), random.nextInt(COLS));
 
