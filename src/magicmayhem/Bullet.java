@@ -27,17 +27,13 @@ public class Bullet extends Sprite {
         this.centerY = centerY;
         this.centerX = centerX;
         this.playerRotate=playerRotate;
-        circ.setRotate(playerRotate);
+        circ.setRotate(circ.getRotate()+playerRotate);
         this.color = color;
         if (!firsthit) {
             firstHit();
         }
     }
-
-    public Bullet() {
-        circ = new Circle(centerX, centerY, radius, color);
-    }
-
+ 
     public void move() {
         centerX = centerX + (Math.cos(Math.toRadians(playerRotate)) * bulletspeed);
         centerY = centerY + (Math.sin(Math.toRadians(playerRotate)) * bulletspeed);
@@ -48,16 +44,16 @@ public class Bullet extends Sprite {
     public void horizontalColisionmove() {
         System.out.println("hor");
         if ((0 < circ.getRotate() && circ.getRotate() <= 90)) {
-           circ.setRotate(-circ.getRotate());
+           playerRotate=-playerRotate;
         }
         if ((90 < circ.getRotate() && circ.getRotate() <= 180)) {
-             circ.setRotate(-circ.getRotate());
+            playerRotate=-playerRotate;
         }
         if ((180 < circ.getRotate() && circ.getRotate() <= 270)) {
-             circ.setRotate(-circ.getRotate());
+             playerRotate=-playerRotate;
         }
         if ((270 < circ.getRotate() && circ.getRotate() <= 360)) {
-             circ.setRotate(-circ.getRotate());
+             playerRotate=-playerRotate;
         }
     }
 
