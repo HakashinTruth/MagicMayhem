@@ -45,23 +45,27 @@ public class MagicMayhem extends Application {
     public Scene mainMenuScene, playScene, optionScene;
     Slider slide;
     Label label;
-    Image MagicLogo, SoundLogo, OptionLogo,playerTwoSprite;
-    ImageView tittle, volume, Optittle,playerOneSprite,playerTwo,playerOne;
+    Image MagicLogo, SoundLogo, OptionLogo, playerTwoSprite;
+    ImageView tittle, volume, Optittle, playerOneSprite, playerTwo, playerOne;
     Player playerone, playertwo;
+    Rectangle Display_P1, Display_P2;
+    Label DisplayLabel_P1, DisplayLabel_P2;
+    int PlayerOneScore, PlayerTwoScore = 0;
     boolean moveUp, moveDown, turnRight, turnLeft = false;
     boolean arrowUp, arrowDown, arrowRight, arrowLeft = false;
     double playerspeed = 4;
-    double bulletspeed=6;
+    double bulletspeed = 6;
     double playerrotation = 3.50;
     double playerwidth = 30;
     double playerheight = 50;
-    double bulletRadius=5.00;
+    double bulletRadius = 5.00;
+    public AnimationTimer timer;
     int width = (int) Screen.getPrimary().getBounds().getWidth();
-    int height = (int) Screen.getPrimary().getBounds().getHeight();
-    ArrayList <Bullet> projectiles;
+    int height = (int) Screen.getPrimary().getBounds().getHeight() - 70;
+    ArrayList<Bullet> projectiles;
     Random wrand = new Random(width);
     Random hrand = new Random(height);
-    
+
     @Override
     public void start(Stage primaryStage) {
 
@@ -102,7 +106,7 @@ public class MagicMayhem extends Application {
         //back button UI
         backButton = new Button("Back");
         backButton.setBackground(null);
-        backButton.setLayoutY(height - 40);
+        backButton.setLayoutY(height - 50);
         backButton.setLayoutX(50);
         backButton.setScaleX(3);
         backButton.setScaleY(2);
@@ -121,8 +125,8 @@ public class MagicMayhem extends Application {
         });
         EventHandler<ActionEvent> PlayEvent = (ActionEvent e) -> {
             PlayMethod(primaryStage);
-        };playButton.setOnAction(PlayEvent);
-        
+        };
+        playButton.setOnAction(PlayEvent);
 
         //action events for Options
         optionsButton.addEventHandler(MouseEvent.MOUSE_ENTERED, (MouseEvent e) -> {
@@ -137,7 +141,7 @@ public class MagicMayhem extends Application {
         });
         EventHandler<ActionEvent> OptionEvent = (ActionEvent e) -> {
             OptionMethod(primaryStage);
-            
+
         };
         optionsButton.setOnAction(OptionEvent);
 
@@ -170,63 +174,125 @@ public class MagicMayhem extends Application {
         });
 
         menuBtn = new Group(tittle, playButton, optionsButton, exitButton);
-        playroot = new Group(backButton);
 
         mainMenuScene = new Scene(menuBtn, width, height, Color.BLACK);
-        
+
         primaryStage.setMaximized(true);
         primaryStage.setScene(mainMenuScene);
         primaryStage.show();
     }
 
     // Play Scene
-    private void PlayMethod(Stage primaryStage) {       
-
- //       playerTwoSprite = new Image(getClass().getResourceAsStream("Playertwo.png"));
-//       playerTwo = new ImageView(playerTwoSprite);
-        // Main Game loop
-        playerone = new Player(wrand,hrand,playerheight, playerwidth, bulletRadius, playerspeed, playerrotation, Color.BLUE,width,height);
-        playertwo = new Player(wrand,hrand,playerheight, playerwidth, bulletRadius, playerspeed, playerrotation, Color.ORANGE,width,height);
-        projectiles = new ArrayList();
-         playroot.getChildren().addAll(playerone.rect, playertwo.rect);
-         // MAZE MAP GENERATION
+    public void PlayMethod(Stage primaryStage) {
+        playroot = new Group(backButton);
+        // Main Game loop        
         Maze Gen = new Maze(width, height);
+        playerone = new Player(wrand, hrand, playerheight, playerwidth, bulletRadius, playerspeed, playerrotation, Color.BLUE, width, height);
+        playertwo = new Player(wrand, hrand, playerheight, playerwidth, bulletRadius, playerspeed, playerrotation, Color.ORANGE, width, height);
+        // Random player spawnning
+        for (Wall wall : Gen.walls) {
+            //player 1
+            if (wall.getBoundsInParent().intersects(playerone.rect.getBoundsInParent()) || playertwo.rect.getBoundsInParent().intersects(playerone.rect.getBoundsInParent())) {
+                playerone = new Player(wrand, hrand, playerheight, playerwidth, bulletRadius, playerspeed, playerrotation, Color.BLUE, width, height);
+            }
+            //player 2
+            if (wall.getBoundsInParent().intersects(playertwo.rect.getBoundsInParent()) || playertwo.rect.getBoundsInParent().intersects(playerone.rect.getBoundsInParent())) {
+                playertwo = new Player(wrand, hrand, playerheight, playerwidth, bulletRadius, playerspeed, playerrotation, Color.ORANGE, width, height);
+            }
+        }
         playroot.getChildren().addAll(Gen.walls);
+        //Display Player scoire
+        Display_P1 = new Rectangle(100, 100, Color.BLUE);
+        Display_P2 = new Rectangle(100, 100, Color.ORANGE);
+        DisplayLabel_P1 = new Label(Integer.toString(PlayerOneScore));
+        DisplayLabel_P2 = new Label(Integer.toString(PlayerTwoScore));
+        Display_P2.setX(width - 100);
+        // p1
+        DisplayLabel_P1.setTextFill(Color.WHITE);
+        DisplayLabel_P1.setLayoutX(45);
+        DisplayLabel_P1.setLayoutY(40);
+        DisplayLabel_P1.setScaleX(5);
+        DisplayLabel_P1.setScaleY(5);
+        // p2
+        DisplayLabel_P2.setTextFill(Color.WHITE);
+        DisplayLabel_P2.setLayoutX(width - 55);
+        DisplayLabel_P2.setLayoutY(40);
+        DisplayLabel_P2.setScaleX(5);
+        DisplayLabel_P2.setScaleY(5);
+
+        // asigning projectiles
+        projectiles = new ArrayList();
+        playroot.getChildren().addAll(Display_P1, Display_P2, DisplayLabel_P1, DisplayLabel_P2, playerone.rect, playertwo.rect);
 
         //Animation TIMER
-        AnimationTimer timer = new AnimationTimer() {
+        timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                Bullet bullet2 = new Bullet(bulletRadius, Color.WHITE, playertwo.getX() + (playerheight/2), playertwo.getY() + (playerwidth / 2), playertwo.rect.getRotate(), bulletspeed);
-                Bullet bullet = new Bullet(bulletRadius, Color.WHITE, playerone.getX() + (playerheight/2), playerone.getY() + (playerwidth / 2), playerone.rect.getRotate(), bulletspeed);
+
+                //Player spawning away from wall
+                Bullet bullet2 = new Bullet(bulletRadius, Color.WHITE, playertwo.getX() + (playerheight / 2), playertwo.getY() + (playerwidth / 2), playertwo.rect.getRotate(), bulletspeed);
+                Bullet bullet = new Bullet(bulletRadius, Color.WHITE, playerone.getX() + (playerheight / 2), playerone.getY() + (playerwidth / 2), playerone.rect.getRotate(), bulletspeed);
+
                 // WASD player one
                 playScene.setOnKeyPressed((KeyEvent event) -> {
                     switch (event.getCode()) {
-                    // player 1 keys
-                             case W: moveUp = true;break;
-                             case S:moveDown = true;break;
-                             case A:turnLeft = true;break;
-                             case D:turnRight = true;break;
-                    // player 2 keys
-                             case UP:arrowUp = true;break;
-                             case DOWN:arrowDown = true; break;
-                             case LEFT:arrowLeft = true;break;
-                             case RIGHT:arrowRight = true;break;
+                        // player 1 keys
+                        case W:
+                            moveUp = true;
+                            break;
+                        case S:
+                            moveDown = true;
+                            break;
+                        case A:
+                            turnLeft = true;
+                            break;
+                        case D:
+                            turnRight = true;
+                            break;
+                        // player 2 keys
+                        case UP:
+                            arrowUp = true;
+                            break;
+                        case DOWN:
+                            arrowDown = true;
+                            break;
+                        case LEFT:
+                            arrowLeft = true;
+                            break;
+                        case RIGHT:
+                            arrowRight = true;
+                            break;
                     }
                 });
                 playScene.setOnKeyReleased((KeyEvent event) -> {
                     switch (event.getCode()) {
                         //player 1 keys
-                             case W:    moveUp = false;  break;
-                             case S:  moveDown = false;  break;
-                             case A:  turnLeft  = false;  break;
-                             case D: turnRight  = false;  break;
-                    // player 2 keys
-                             case UP:    arrowUp = false;break;
-                            case DOWN:  arrowDown = false;  break;
-                            case LEFT:  arrowLeft  = false;  break;
-                            case RIGHT: arrowRight  = false;  break;
-                               }
+                        case W:
+                            moveUp = false;
+                            break;
+                        case S:
+                            moveDown = false;
+                            break;
+                        case A:
+                            turnLeft = false;
+                            break;
+                        case D:
+                            turnRight = false;
+                            break;
+                        // player 2 keys
+                        case UP:
+                            arrowUp = false;
+                            break;
+                        case DOWN:
+                            arrowDown = false;
+                            break;
+                        case LEFT:
+                            arrowLeft = false;
+                            break;
+                        case RIGHT:
+                            arrowRight = false;
+                            break;
+                    }
                     //player one bullet
                     if (event.getCode() == KeyCode.R) {
                         projectiles.add(bullet);
@@ -239,16 +305,32 @@ public class MagicMayhem extends Application {
                     }
                 });
                 //player 1
-                if (moveUp) playerone.moveup();
-                if (moveDown) playerone.movedown();
-                if (turnLeft)  playerone.antirotate();
-                if (turnRight)  playerone.rotate();
+                if (moveUp) {
+                    playerone.moveup();
+                }
+                if (moveDown) {
+                    playerone.movedown();
+                }
+                if (turnLeft) {
+                    playerone.antirotate();
+                }
+                if (turnRight) {
+                    playerone.rotate();
+                }
 
                 //player 2
-              if (arrowUp) playertwo.moveup();
-              if (arrowDown)playertwo.movedown();
-              if (arrowRight) playertwo.rotate();
-              if (arrowLeft) playertwo.antirotate();   
+                if (arrowUp) {
+                    playertwo.moveup();
+                }
+                if (arrowDown) {
+                    playertwo.movedown();
+                }
+                if (arrowRight) {
+                    playertwo.rotate();
+                }
+                if (arrowLeft) {
+                    playertwo.antirotate();
+                }
 
                 // dead evet
                 if (playerone.dead) {
@@ -267,9 +349,19 @@ public class MagicMayhem extends Application {
                     //collision detection
                     if (b.getCircle().getBoundsInParent().intersects(playerone.rect.getBoundsInParent())) {
                         playerone.dead = true;
+                        PlayerTwoScore++;
+                        DisplayLabel_P1 = new Label(Integer.toString(PlayerTwoScore));
                     }
                     if (b.getCircle().getBoundsInParent().intersects(playertwo.rect.getBoundsInParent())) {
                         playertwo.dead = true;
+                        PlayerOneScore++;
+                        DisplayLabel_P2 = new Label(Integer.toString(PlayerOneScore));
+                    }
+                    //round over
+                    if (playerone.dead || playertwo.dead) {
+                        timer.stop();
+                        playroot.getChildren().clear();
+                        PlayMethod(primaryStage);
                     }
                     // BALL TO MAZE COLLISION
                     if (b.getX() >= width || b.getX() <= 0) {
@@ -311,7 +403,7 @@ public class MagicMayhem extends Application {
                         }
                     }
                     if (wall.getBoundsInParent().intersects(playertwo.rect.getBoundsInParent())) {
-                        //player 1
+                        //player 2
                         if (arrowUp) {
                             playertwo.antimoveup();
                         }
@@ -326,14 +418,47 @@ public class MagicMayhem extends Application {
                         }
                     }
                 }
+                //player screen edges collision
+                if (playerone.getX() >= width || playerone.getX() <= 0 || playerone.getY() >= height || playerone.getY() <= 0) {
+                    //player 1
+                    if (moveUp) {
+                        playerone.antimoveup();
+                    }
+                    if (moveDown) {
+                        playerone.antimovedown();
+                    }
+                    if (turnLeft) {
+                        playerone.colantirotate();
+                    }
+                    if (turnRight) {
+                        playerone.colrotate();
+                    }
+                }
+                if (playertwo.getX() >= width || playertwo.getX() <= 0 || playertwo.getY() >= height || playertwo.getY() <= 0) {
+                    //player 2
+                    if (arrowUp) {
+                        playertwo.antimoveup();
+                    }
+                    if (arrowDown) {
+                        playertwo.antimovedown();
+                    }
+                    if (arrowLeft) {
+                        playertwo.colantirotate();
+                    }
+                    if (arrowRight) {
+                        playertwo.colrotate();
+                    }
+                }
             }
-
         };
         timer.start();
 
         playScene = new Scene(playroot, width, height, Color.BLACK);
+
         EventHandler<ActionEvent> event = (ActionEvent e) -> {
             timer.stop();
+            PlayerOneScore = 0;
+            PlayerTwoScore = 0;
             start(primaryStage);
         };
         backButton.setOnAction(event);
@@ -342,6 +467,7 @@ public class MagicMayhem extends Application {
 
     //  Option  Scene
     private void OptionMethod(Stage primaryStage) {
+        playroot = new Group(backButton);
         // Option  tittle
         OptionLogo = new Image(getClass().getResourceAsStream("Options.png"));
         Optittle = new ImageView(OptionLogo);
