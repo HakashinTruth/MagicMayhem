@@ -16,9 +16,89 @@ import javafx.scene.shape.Rectangle;
 public class Bullet extends Sprite {
 
     private final Circle circ;
-    double bulletspeed;
-    public double centerX, centerY, playerRotate, radius;
-    boolean firsthit = false;
+    private double bulletspeed;
+    private double centerX, centerY, playerRotate, radius;
+    private boolean firsthit = false;
+
+    public double getBulletspeed() {
+        return bulletspeed;
+    }
+
+    public void setBulletspeed(double bulletspeed) {
+        this.bulletspeed = bulletspeed;
+    }
+
+    public double getCenterX() {
+        return centerX;
+    }
+
+    public void setCenterX(double centerX) {
+        this.centerX = centerX;
+    }
+
+    public double getCenterY() {
+        return centerY;
+    }
+
+    public void setCenterY(double centerY) {
+        this.centerY = centerY;
+    }
+
+    public double getPlayerRotate() {
+        return playerRotate;
+    }
+
+    public void setPlayerRotate(double playerRotate) {
+        this.playerRotate = playerRotate;
+    }
+
+    public double getRadius() {
+        return radius;
+    }
+
+    public void setRadius(double radius) {
+        this.radius = radius;
+    }
+
+    public boolean isFirsthit() {
+        return firsthit;
+    }
+
+    public void setFirsthit(boolean firsthit) {
+        this.firsthit = firsthit;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
+
+    public double getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(double speed) {
+        this.speed = speed;
+    }
+
+    public double getRotation() {
+        return rotation;
+    }
+
+    public void setRotation(double rotation) {
+        this.rotation = rotation;
+    }
+
+    public double getRadians() {
+        return Radians;
+    }
+
+    public void setRadians(double Radians) {
+        this.Radians = Radians;
+    }
 
     public Bullet(double radius, Color color, double centerX, double centerY, double playerRotate, double bulletspeed) {
         circ = new Circle(centerX, centerY, radius, color);
@@ -26,14 +106,14 @@ public class Bullet extends Sprite {
         this.radius = radius;
         this.centerY = centerY;
         this.centerX = centerX;
-        this.playerRotate=playerRotate;
-        circ.setRotate(circ.getRotate()+playerRotate);
+        this.playerRotate = playerRotate;
+        circ.setRotate(circ.getRotate() + playerRotate);
         this.color = color;
         if (!firsthit) {
             firstHit();
         }
     }
- 
+
     public void move() {
         centerX = centerX + (Math.cos(Math.toRadians(playerRotate)) * bulletspeed);
         centerY = centerY + (Math.sin(Math.toRadians(playerRotate)) * bulletspeed);
@@ -43,16 +123,16 @@ public class Bullet extends Sprite {
 
     public void horizontalColisionmove() {
         if ((0 < circ.getRotate() && circ.getRotate() <= 90)) {
-           playerRotate=-playerRotate;
+            playerRotate = -playerRotate;
         }
         if ((90 < circ.getRotate() && circ.getRotate() <= 180)) {
-            playerRotate=-playerRotate;
+            playerRotate = -playerRotate;
         }
         if ((180 < circ.getRotate() && circ.getRotate() <= 270)) {
-             playerRotate=-playerRotate;
+            playerRotate = -playerRotate;
         }
         if ((270 < circ.getRotate() && circ.getRotate() <= 360)) {
-             playerRotate=-playerRotate;
+            playerRotate = -playerRotate;
         }
     }
 
@@ -66,7 +146,7 @@ public class Bullet extends Sprite {
 
         }
         if (180 < circ.getRotate() && circ.getRotate() <= 270) {
-            playerRotate =  (180 - playerRotate);
+            playerRotate = (180 - playerRotate);
 
         }
         if (270 < circ.getRotate() && circ.getRotate() <= 360) {

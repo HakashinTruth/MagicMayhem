@@ -192,11 +192,11 @@ public class MagicMayhem extends Application {
         // Random player spawnning
         for (Wall wall : Gen.walls) {
             //player 1
-            if (wall.getBoundsInParent().intersects(playerone.rect.getBoundsInParent()) || playertwo.rect.getBoundsInParent().intersects(playerone.rect.getBoundsInParent())) {
+            if (wall.getBoundsInParent().intersects(playerone.getRect().getBoundsInParent()) || playertwo.getRect().getBoundsInParent().intersects(playerone.getRect().getBoundsInParent())) {
                 playerone = new Player(wrand, hrand, playerheight, playerwidth, bulletRadius, playerspeed, playerrotation, Color.BLUE, width, height);
             }
             //player 2
-            if (wall.getBoundsInParent().intersects(playertwo.rect.getBoundsInParent()) || playertwo.rect.getBoundsInParent().intersects(playerone.rect.getBoundsInParent())) {
+            if (wall.getBoundsInParent().intersects(playertwo.getRect().getBoundsInParent()) || playertwo.getRect().getBoundsInParent().intersects(playerone.getRect().getBoundsInParent())) {
                 playertwo = new Player(wrand, hrand, playerheight, playerwidth, bulletRadius, playerspeed, playerrotation, Color.ORANGE, width, height);
             }
         }
@@ -222,7 +222,7 @@ public class MagicMayhem extends Application {
 
         // asigning projectiles
         projectiles = new ArrayList();
-        playroot.getChildren().addAll(Display_P1, Display_P2, DisplayLabel_P1, DisplayLabel_P2, playerone.rect, playertwo.rect);
+        playroot.getChildren().addAll(Display_P1, Display_P2, DisplayLabel_P1, DisplayLabel_P2, playerone.getRect(), playertwo.getRect(), playertwo.getTurrent(), playerone.getTurrent());
 
         //Animation TIMER
         timer = new AnimationTimer() {
@@ -230,8 +230,8 @@ public class MagicMayhem extends Application {
             public void handle(long now) {
 
                 //Player spawning away from wall
-                Bullet bullet2 = new Bullet(bulletRadius, Color.WHITE, playertwo.getX() + (playerheight / 2), playertwo.getY() + (playerwidth / 2), playertwo.rect.getRotate(), bulletspeed);
-                Bullet bullet = new Bullet(bulletRadius, Color.WHITE, playerone.getX() + (playerheight / 2), playerone.getY() + (playerwidth / 2), playerone.rect.getRotate(), bulletspeed);
+                Bullet bullet2 = new Bullet(bulletRadius, Color.WHITE, playertwo.getX() + (playerheight / 2), playertwo.getY() + (playerwidth / 2), playertwo.getRect().getRotate(), bulletspeed);
+                Bullet bullet = new Bullet(bulletRadius, Color.WHITE, playerone.getX() + (playerheight / 2), playerone.getY() + (playerwidth / 2), playerone.getRect().getRotate(), bulletspeed);
 
                 // WASD player one
                 playScene.setOnKeyPressed((KeyEvent event) -> {
@@ -333,32 +333,31 @@ public class MagicMayhem extends Application {
                 }
 
                 // dead evet
-                if (playerone.dead) {
-                    playroot.getChildren().removeAll(playerone.rect, projectiles.get((projectiles.size() - 1)).getCircle());
+                if (playerone.isDead()) {
+                    playroot.getChildren().removeAll(playerone.getRect(), projectiles.get((projectiles.size() - 1)).getCircle());
                 }
-                if (playertwo.dead) {
-                    playroot.getChildren().removeAll(playertwo.rect, projectiles.get((projectiles.size() - 1)).getCircle());
+                if (playertwo.isDead()) {
+                    playroot.getChildren().removeAll(playertwo.getRect(), projectiles.get((projectiles.size() - 1)).getCircle());
                 }
                 // bullet updater
 
                 Iterator<Bullet> it = projectiles.iterator();
-
                 while (it.hasNext()) {
                     Bullet b = it.next();
                     b.move();
                     //collision detection
-                    if (b.getCircle().getBoundsInParent().intersects(playerone.rect.getBoundsInParent())) {
-                        playerone.dead = true;
+                    if (b.getCircle().getBoundsInParent().intersects(playerone.getRect().getBoundsInParent())) {
+                        playerone.setDead(true);
                         PlayerTwoScore++;
                         DisplayLabel_P1 = new Label(Integer.toString(PlayerTwoScore));
                     }
-                    if (b.getCircle().getBoundsInParent().intersects(playertwo.rect.getBoundsInParent())) {
-                        playertwo.dead = true;
+                    if (b.getCircle().getBoundsInParent().intersects(playertwo.getRect().getBoundsInParent())) {
+                        playertwo.setDead(true);
                         PlayerOneScore++;
                         DisplayLabel_P2 = new Label(Integer.toString(PlayerOneScore));
                     }
                     //round over
-                    if (playerone.dead || playertwo.dead) {
+                    if (playerone.isDead() || playertwo.isDead()) {
                         timer.stop();
                         playroot.getChildren().clear();
                         PlayMethod(primaryStage);
@@ -366,18 +365,16 @@ public class MagicMayhem extends Application {
                     // BALL TO MAZE COLLISION
                     if (b.getX() >= width || b.getX() <= 0) {
                         b.verticalColisionmove();
-
                     }
                     if (b.getY() >= height || b.getY() <= 0) {
                         b.horizontalColisionmove();
-
                     }
                     for (Wall wall : Gen.walls) {
                         if (wall.getBoundsInParent().intersects(b.getCircle().getBoundsInParent())) {
-                            if (wall.isVertical) {
+                            if (wall.getisVertical()) {
                                 b.verticalColisionmove();
 
-                            } else if (!wall.isVertical) {
+                            } else if (!wall.getisVertical()) {
                                 b.horizontalColisionmove();
 
                             }
@@ -386,7 +383,7 @@ public class MagicMayhem extends Application {
                 }
                 // player:MAZE COLIISION 
                 for (Wall wall : Gen.walls) {
-                    if (wall.getBoundsInParent().intersects(playerone.rect.getBoundsInParent())) {
+                    if (wall.getBoundsInParent().intersects(playerone.getRect().getBoundsInParent())) {
                         //what player will do
                         //player 1
                         if (moveUp) {
@@ -402,7 +399,7 @@ public class MagicMayhem extends Application {
                             playerone.colrotate();
                         }
                     }
-                    if (wall.getBoundsInParent().intersects(playertwo.rect.getBoundsInParent())) {
+                    if (wall.getBoundsInParent().intersects(playertwo.getRect().getBoundsInParent())) {
                         //player 2
                         if (arrowUp) {
                             playertwo.antimoveup();

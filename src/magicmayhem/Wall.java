@@ -12,10 +12,18 @@ import javafx.scene.shape.Rectangle;
  * @author 9706
  */
 public class Wall  extends Rectangle{
-    public boolean isVertical;
+    private boolean isVertical;
 
     Wall(int x, int y, int width, int height, boolean isVertical) {
        super(x, y, width, height);
                 this.isVertical = isVertical;
+    }
+
+    public boolean getisVertical() {
+        return isVertical;
+    }
+
+    public void setIsVertical(boolean isVertical) {
+        this.isVertical = isVertical;
     }
 }

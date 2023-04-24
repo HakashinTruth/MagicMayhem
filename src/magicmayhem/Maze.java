@@ -17,16 +17,160 @@ import javafx.scene.shape.Rectangle;
  */
 public  class Maze {
 
-    public int width;
-    public int height;
-    public int cellSize;
-    public int ROWS;
-    public int COLS;
-    public Color WallColor = Color.WHITE;
-    public Color CellColor = Color.BLACK;
-    public int wallWidth = 4;
-    public int visited = 8;
-    public int left = 1;
+    private int width;
+    private int height;
+    private int cellSize;
+    private int ROWS;
+    private int COLS;
+    private Color WallColor = Color.WHITE;
+    private Color CellColor = Color.BLACK;
+    private int wallWidth = 4;
+    private int visited = 8;
+    private int left = 1;
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public int getCellSize() {
+        return cellSize;
+    }
+
+    public void setCellSize(int cellSize) {
+        this.cellSize = cellSize;
+    }
+
+    public int getROWS() {
+        return ROWS;
+    }
+
+    public void setROWS(int ROWS) {
+        this.ROWS = ROWS;
+    }
+
+    public int getCOLS() {
+        return COLS;
+    }
+
+    public void setCOLS(int COLS) {
+        this.COLS = COLS;
+    }
+
+    public Color getWallColor() {
+        return WallColor;
+    }
+
+    public void setWallColor(Color WallColor) {
+        this.WallColor = WallColor;
+    }
+
+    public Color getCellColor() {
+        return CellColor;
+    }
+
+    public void setCellColor(Color CellColor) {
+        this.CellColor = CellColor;
+    }
+
+    public int getWallWidth() {
+        return wallWidth;
+    }
+
+    public void setWallWidth(int wallWidth) {
+        this.wallWidth = wallWidth;
+    }
+
+    public int getVisited() {
+        return visited;
+    }
+
+    public void setVisited(int visited) {
+        this.visited = visited;
+    }
+
+    public int getLeft() {
+        return left;
+    }
+
+    public void setLeft(int left) {
+        this.left = left;
+    }
+
+    public int getUp() {
+        return up;
+    }
+
+    public void setUp(int up) {
+        this.up = up;
+    }
+
+    public int getRight() {
+        return right;
+    }
+
+    public void setRight(int right) {
+        this.right = right;
+    }
+
+    public int getDown() {
+        return down;
+    }
+
+    public void setDown(int down) {
+        this.down = down;
+    }
+
+    public List<Wall> getWalls() {
+        return walls;
+    }
+
+    public void setWalls(List<Wall> walls) {
+        this.walls = walls;
+    }
+
+    public int[][] getMaze() {
+        return maze;
+    }
+
+    public void setMaze(int[][] maze) {
+        this.maze = maze;
+    }
+
+    public Random getRandom() {
+        return random;
+    }
+
+    public void setRandom(Random random) {
+        this.random = random;
+    }
+
+    public Wall getH() {
+        return h;
+    }
+
+    public void setH(Wall h) {
+        this.h = h;
+    }
+
+    public Wall getV() {
+        return v;
+    }
+
+    public void setV(Wall v) {
+        this.v = v;
+    }
     public int up = 2;
     public int right = 3;
     public int down = 4;
