@@ -113,6 +113,13 @@ public class Bullet extends Sprite {
             firstHit();
         }
     }
+    public Bullet() {
+        circ = new Circle(centerX, centerY, radius, color);
+        circ.setRotate(circ.getRotate() + playerRotate);
+        if (!firsthit) {
+            firstHit();
+        }
+    }
 
     public void move() {
         centerX = centerX + (Math.cos(Math.toRadians(playerRotate)) * bulletspeed);

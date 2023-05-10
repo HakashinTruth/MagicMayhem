@@ -25,6 +25,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -50,7 +51,8 @@ public class MagicMayhem extends Application {
     Player playerone, playertwo;
     Rectangle Display_P1, Display_P2;
     Label DisplayLabel_P1, DisplayLabel_P2;
-    int PlayerOneScore, PlayerTwoScore = 0;
+    PowerUp power;
+    int PlayerOneScore, PlayerTwoScore = 9;
     boolean moveUp, moveDown, turnRight, turnLeft = false;
     boolean arrowUp, arrowDown, arrowRight, arrowLeft = false;
     double playerspeed = 4;
@@ -65,6 +67,7 @@ public class MagicMayhem extends Application {
     ArrayList<Bullet> projectiles;
     Random wrand = new Random(width);
     Random hrand = new Random(height);
+    Random randboost = new Random(3);
 
     @Override
     public void start(Stage primaryStage) {
@@ -185,6 +188,7 @@ public class MagicMayhem extends Application {
     // Play Scene
     public void PlayMethod(Stage primaryStage) {
         playroot = new Group(backButton);
+        power = new PowerUp(hrand.nextInt(width), wrand.nextInt(height), 25, Color.PINK);
         // Main Game loop        
         Maze Gen = new Maze(width, height);
         playerone = new Player(wrand, hrand, playerheight, playerwidth, bulletRadius, playerspeed, playerrotation, Color.BLUE, width, height);
@@ -192,12 +196,14 @@ public class MagicMayhem extends Application {
         // Random player spawnning
         for (Wall wall : Gen.walls) {
             //player 1
-            if (wall.getBoundsInParent().intersects(playerone.getRect().getBoundsInParent()) || playertwo.getRect().getBoundsInParent().intersects(playerone.getRect().getBoundsInParent())) {
+            if (wall.getBoundsInParent().intersects(playerone.getRect().getBoundsInParent()) || playertwo.getRect().getBoundsInParent().intersects(playerone.getRect().getBoundsInParent()) || wall.getBoundsInParent().intersects(power.powerShape.getBoundsInParent())) {
                 playerone = new Player(wrand, hrand, playerheight, playerwidth, bulletRadius, playerspeed, playerrotation, Color.BLUE, width, height);
+                power = new PowerUp(hrand.nextInt(width), wrand.nextInt(height), 25, Color.PINK);
             }
             //player 2
-            if (wall.getBoundsInParent().intersects(playertwo.getRect().getBoundsInParent()) || playertwo.getRect().getBoundsInParent().intersects(playerone.getRect().getBoundsInParent())) {
+            if (wall.getBoundsInParent().intersects(playertwo.getRect().getBoundsInParent()) || playertwo.getRect().getBoundsInParent().intersects(playerone.getRect().getBoundsInParent()) || wall.getBoundsInParent().intersects(power.powerShape.getBoundsInParent())) {
                 playertwo = new Player(wrand, hrand, playerheight, playerwidth, bulletRadius, playerspeed, playerrotation, Color.ORANGE, width, height);
+                power = new PowerUp(hrand.nextInt(width), wrand.nextInt(height), 25, Color.PINK);
             }
         }
         playroot.getChildren().addAll(Gen.walls);
@@ -219,10 +225,27 @@ public class MagicMayhem extends Application {
         DisplayLabel_P2.setLayoutY(40);
         DisplayLabel_P2.setScaleX(5);
         DisplayLabel_P2.setScaleY(5);
+        // Condition after winning
+//        if (PlayerOneScore == 10 || PlayerTwoScore == 10) {
+//            Button yes,no;
+//            Label msg = new Label();
+//            yes= new Button("Yes");
+//            no= new Button("No");
+//            VBox vbox = new VBox(msg);
+//            vbox.getChildren().addAll(yes,no,msg);
+//            if (Continue(PlayerOneScore, PlayerTwoScore)) {
+//                msg.setText("Player One Wins!!!");
+//                playroot.getChildren().add(vbox);
+//            }else{
+//                msg.setText("Player Two Wins!!!");
+//                playroot.getChildren().add(vbox);
+//            }
+//        }
 
         // asigning projectiles
         projectiles = new ArrayList();
-        playroot.getChildren().addAll(Display_P1, Display_P2, DisplayLabel_P1, DisplayLabel_P2, playerone.getRect(), playertwo.getRect(), playertwo.getTurrent(), playerone.getTurrent());
+
+        playroot.getChildren().addAll(Display_P1, Display_P2, DisplayLabel_P1, DisplayLabel_P2, playerone.getRect(), playertwo.getRect(), playertwo.getTurrent(), playerone.getTurrent(), power.powerShape);
 
         //Animation TIMER
         timer = new AnimationTimer() {
@@ -292,6 +315,14 @@ public class MagicMayhem extends Application {
                         case RIGHT:
                             arrowRight = false;
                             break;
+                    }
+                    // player to power colision
+                    for (Wall wall : Gen.walls) {
+                        if (power.powerShape.getBoundsInParent().intersects(playerone.getRect().getBoundsInParent()) || power.powerShape.getBoundsInParent().intersects(playertwo.getRect().getBoundsInParent()) || wall.getBoundsInParent().intersects(power.powerShape.getBoundsInParent())) {
+                            playroot.getChildren().remove(power.powerShape);
+                            power = new PowerUp(hrand.nextInt(width), wrand.nextInt(height), 25, Color.PINK);
+                            playroot.getChildren().add(power.powerShape);
+                        }
                     }
                     //player one bullet
                     if (event.getCode() == KeyCode.R) {
@@ -448,6 +479,7 @@ public class MagicMayhem extends Application {
                 }
             }
         };
+
         timer.start();
 
         playScene = new Scene(playroot, width, height, Color.BLACK);
@@ -458,11 +490,13 @@ public class MagicMayhem extends Application {
             PlayerTwoScore = 0;
             start(primaryStage);
         };
+
         backButton.setOnAction(event);
+
         primaryStage.setScene(playScene);
     }
 
-    //  Option  Scene
+//  Option  Scene
     private void OptionMethod(Stage primaryStage) {
         playroot = new Group(backButton);
         // Option  tittle
@@ -491,5 +525,14 @@ public class MagicMayhem extends Application {
         };
         backButton.setOnAction(event);
         primaryStage.setScene(optionScene);
+    }
+
+    boolean Continue(int PlayerOneScore1, int PlayerTwoScore1) {
+        if (PlayerOneScore1 == 10) {
+            return true;
+        } else if (PlayerTwoScore1 == 10) {
+            return false;
+        }
+        return false;
     }
 }
